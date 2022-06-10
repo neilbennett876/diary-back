@@ -48,8 +48,11 @@ app.patch("/diary/patch/:id", async (req, res) => {
     const db = await getConnected();
     db.collection("diary").updateOne(
       { _id: ObjectId(req.params.id) },
-      { $push: { mpg: [89] } }
-      // { $push: { scores: 89 } }
+      { $push: { mpg: req.body.mpg } }
+    );
+    db.collection("diary").updateOne(
+      { _id: ObjectId(req.params.id) },
+      { $set: { mileage: req.body.mileage } }
     );
     res.status(200).send({ success: "Record updated" });
   } else {
