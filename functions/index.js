@@ -2,11 +2,7 @@ import express from "express";
 import functions from "firebase-functions";
 import cors from "cors";
 import { config } from "dotenv";
-import {
-  addARecord,
-  getAllRecords,
-  getOneRecord,
-} from "./src/services/actions.js";
+import { addARecord, getAllRecords } from "./src/services/actions.js";
 import { ObjectId } from "mongodb";
 import { getConnected } from "./src/gateway/connectDb.js";
 
@@ -34,20 +30,33 @@ app.get("/diary", async (req, res) => {
   }
 });
 
-app.patch("/diary/:id", async (req, res) => {
-  const updates = req.body;
-
+app.get("/diary/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     const db = await getConnected();
-    db.collection("diary").updateOne(
-      { _id: ObjectId(req.params.id) },
-      { $set: updates }
-    );
-    res.status(200).send({ success: "Record updated" });
+    const one = await db
+      .collection("diary")
+      .findOne({ _id: ObjectId(req.params.id) });
+    res.status(200).send(one);
   } else {
     res.status(500).send("Not updated");
   }
 });
+
+// app.patch("/diary/:id", async (req, res) => {
+//   const updates = req.body;
+
+//   if (ObjectId.isValid(req.params.id)) {
+//     const db = await getConnected();
+//     db.collection("diary").updateOne(
+//       { _id: ObjectId(req.params.id) },
+//       { $set: updates }
+//     );
+//     res.status(200).send({ success: "Record updated" });
+//   } else {
+//     res.status(500).send("Not updated");
+//   }
+// });
+
 app.patch("/diary/patch/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     const db = await getConnected();
@@ -63,10 +72,6 @@ app.patch("/diary/patch/:id", async (req, res) => {
   } else {
     res.status(500).send("Not updated");
   }
-});
-
-app.listen(3030, () => {
-  console.log("Api running");
 });
 
 export const api = functions.https.onRequest(app);

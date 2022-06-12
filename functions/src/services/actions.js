@@ -27,7 +27,11 @@ export const getAllRecords = async () => {
 };
 
 export const getOneRecord = async () => {
-  const col = await getDiaryCollection();
-  const single = await col.findOne();
-  console.log(single);
+  if (ObjectId.isValid(req.params.id)) {
+    const db = await getConnected();
+    const one = await db
+      .collection("diary")
+      .findOne({ _id: ObjectId(req.params.id) });
+    return one;
+  }
 };
