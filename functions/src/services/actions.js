@@ -53,13 +53,18 @@ export const getOneRecord = async (req, res) => {
 export const updateRecord = async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     const db = await getConnected();
+
+    db.collection("diary").updateOne(
+      { _id: ObjectId(req.params.id) },
+      { $set: { mileage: req.body.mileage } }
+    );
     db.collection("diary").updateOne(
       { _id: ObjectId(req.params.id) },
       { $push: { mpg: parseFloat(req.body.mpg) } }
     );
     db.collection("diary").updateOne(
       { _id: ObjectId(req.params.id) },
-      { $set: { mileage: req.body.mileage } }
+      { $push: { notes: { note: req.body.notes } } }
     );
     res.status(200).send({ success: "Record updated" });
   } else {
