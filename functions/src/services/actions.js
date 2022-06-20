@@ -13,6 +13,7 @@ export const addARecord = async (rec) => {
     make: rec.make,
     model: rec.model,
     mileage: parseInt(rec.mileage),
+    userID: rec.userID,
   };
   const col = await getDiaryCollection();
   const { newRecord } = await col.insertOne(record);
